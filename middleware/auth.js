@@ -36,3 +36,20 @@ export const verificarAdmin = async (req, res, next) => {
     
     next()
 }
+
+// Função utilitária (não-middleware) usada quando você precisa checar
+// programaticamente se um usuário é admin, sem interromper a requisição
+// com um middleware. Usada em routes/estadios.js no DELETE de avaliações.
+export const usuarioEhAdmin = async (usuarioId) => {
+    const { data: perfil, error } = await supabase
+        .from('perfis')
+        .select('tipo')
+        .eq('id', usuarioId)
+        .single()
+
+    if (error || !perfil) {
+        return false
+    }
+
+    return perfil.tipo === 'admin'
+}
